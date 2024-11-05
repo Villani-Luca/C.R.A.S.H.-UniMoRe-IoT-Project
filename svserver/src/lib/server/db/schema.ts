@@ -19,6 +19,7 @@ export const device = pgTable('device', {
 	id: varchar('id', { length: 20 }).notNull(),
 	name: varchar('name', { length: 50 }).notNull(),
 	userid: text('userid').references(() => user.id).notNull(),
+	lastknownlocation: geometry('last_known_location', { type: 'point', mode: 'xy', srid: 4326 }).notNull(),
 })
 
 export const crashreport = pgTable('crashreport', {
