@@ -1,18 +1,21 @@
 <script lang="ts">
-	import { user } from '$lib/server/db/schema';
 	import { onMount } from 'svelte';
 
 	let map;
 	let markers = [];
-	let error_message = '';
+	type User_Position={
+    latitude: number;
+    longitude: number;
+}
 
 	onMount(async () => {
 		// Dynamically import Leaflet to avoid SSR issues
 		const L = await import('leaflet');
 		import('leaflet/dist/leaflet.css');
 
-		let user_position: { latitude: number; longitude: number };
-		user_position = await geolocalize(user_position, error_message);
+		let user_position = await getUserPosition();
+		debugger;
+		console.log(user_position);
 		// Initialize the map after Leaflet is imported
 		console.log('Posizione ottenuta:', user_position);
 		map = L.map('map', {
@@ -43,24 +46,20 @@
 		marker.bindPopup('New Marker').openPopup();
 	}
 
-	async function geolocalize(
-		user_position: { latitude: number; longitude: number },
-		error_message: string
+	async function getUserPosition(
 	) {
-		navigator.geolocation.getCurrentPosition(
+		return new Promise<User_Position>((resolve, reject)=>{
+			navigator.geolocation.getCurrentPosition(
 			(position) => {
-				user_position = {
+				let user_position = {
 					latitude: position.coords.latitude,
 					longitude: position.coords.longitude
 				};
 				console.log('Posizione ottenuta:', user_position);
+				resolve(user_position);
 			},
-			(error) => {
-				error_message = `Errore: ${error.message}`;
-				console.error('Errore Geolocation:', error);
-			}
-		);
-		return user_position;
+			reject
+		)});
 	}
 </script>
 
