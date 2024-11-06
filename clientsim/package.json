@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx ts-node ./src/index.ts"
+    "dev": "npx ts-node ./src/index.ts",
+    "cc": "npx ts-node ./src/index.ts crashclient",
+    "cc1": "npx ts-node ./src/index.ts crashclient DEV1",
+    "cc2": "npx ts-node ./src/index.ts crashclient DEV2",
+    "cc3": "npx ts-node ./src/index.ts crashclient DEV3"
   },
   "keywords": [],
   "author": "",

@@ -8,6 +8,7 @@ program.version('1.0.0');
 program
   .command('crashclient')
   .description('Avvia il simulatore client tramite websocket')
+  .argument('<device>')
   .action(error_handler<any>(crash_socket_action))
 
 /*

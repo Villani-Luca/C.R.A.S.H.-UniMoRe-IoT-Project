@@ -1,43 +1,46 @@
 import { io, Socket } from 'socket.io-client';
+import { CrashNotification, CrashNotificationAnon, PositionUpdate } from './messages';
 
 
-const DEVICEID = 'DEV-123';
-export function crash_socket_action() {
-  console.info("Avvio crash socket client");
+export function crash_socket_action(device: string) {
+  console.info("Avvio crash socket client DEVICE: " + device);
 
-  const socket = io("ws://localhost:8080");
-
-  // TODO: 3 eventi principali per gestione delle connessioni
-  // TODO: eventi che ci interessano a noi ( principalmente l'evento di crash );
-  // TODO: invio delle coordinate attuali ogni x 
-  // TODO: gestione della firma del digital twin e nel caso criptazione del messaggio 
+  const socket = io("ws://localhost:3000");
 
   socket.on('connection', __connection);
-  socket.on('connection-evt', __connection_evt);
+  socket.on('server-crash-notification', server_crash_notification);
 
-  setTimeout(() => {
-    positionupdate(socket, {
-      device: DEVICEID,
+  setInterval(() => {
+    notify_position_update(socket, {
+      device: device,
       latitude: 100 * Math.random(),
       longitude: 100 * Math.random(),
     });
-  }, 1000)
+  }, 2000)
+
+  setInterval(() => {
+    notify_crash(socket, {
+      device: device,
+      latitude: 100 * Math.random(),
+      longitude: 100 * Math.random(),
+    });
+  }, 10000)
 }
 
 function __connection() {
   console.log('Socket connected');
 }
 
-function __connection_evt(message: string) {
-  console.log("connection-evt", message);
-}
-
-function positionupdate(socket: Socket, data: PositionUpdate) {
+function notify_position_update(socket: Socket, data: PositionUpdate) {
+  console.log('client-position-update');
   socket.emit('client-position-update', JSON.stringify(data));
 }
 
-type PositionUpdate = {
-  device: string,
-  latitude: number,
-  longitude: number,
+function notify_crash(socket: Socket, data: CrashNotification) {
+  console.log('client-crash-notification');
+  socket.emit('client-crash-notification', JSON.stringify(data));
+}
+
+function server_crash_notification(message: string) {
+  const data: CrashNotificationAnon = JSON.parse(message);
 }

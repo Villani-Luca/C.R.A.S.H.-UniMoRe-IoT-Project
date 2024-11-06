@@ -19,7 +19,7 @@ export const device = pgTable('device', {
 	id: varchar('id', { length: 20 }).primaryKey(),
 	name: varchar('name', { length: 50 }).notNull(),
 	userid: text('userid').references(() => user.id).notNull(),
-	lastknownlocation: geometry('last_known_location', { type: 'point', mode: 'xy', srid: 4326 }),
+	lastknownlocation: geometry('last_known_location', { type: 'point', mode: 'xy', srid: 4326 }).notNull(),
 	activesocket: varchar('activesocket', { length: 20 }),
 })
 
