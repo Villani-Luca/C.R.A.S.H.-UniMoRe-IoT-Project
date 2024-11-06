@@ -13,16 +13,16 @@ export function crash_socket_action(device: string) {
   setInterval(() => {
     notify_position_update(socket, {
       device: device,
-      latitude: 100 * Math.random(),
-      longitude: 100 * Math.random(),
+      latitude: 44 + Math.random(),
+      longitude: 10 + Math.random(),
     });
   }, 2000)
 
   setInterval(() => {
     notify_crash(socket, {
       device: device,
-      latitude: 100 * Math.random(),
-      longitude: 100 * Math.random(),
+      latitude: 44 + Math.random(),
+      longitude: 10 + Math.random(),
     });
   }, 10000)
 }
