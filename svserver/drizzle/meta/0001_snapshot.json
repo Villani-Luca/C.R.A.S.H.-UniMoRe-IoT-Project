@@ -1,6 +1,6 @@
 {
-  "id": "2bb78694-9b7b-451a-8a8b-64fdb4747d02",
-  "prevId": "f0687e05-78cf-47ac-806c-bf40722581a5",
+  "id": "d11c4973-b0b8-4c94-b531-f712d6c76ab6",
+  "prevId": "8f205061-b2ed-428f-8131-024722bd0cf0",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -75,7 +75,7 @@
         "id": {
           "name": "id",
           "type": "varchar(20)",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "name": {
@@ -89,6 +89,18 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "last_known_location": {
+          "name": "last_known_location",
+          "type": "geometry(point)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "activesocket": {
+          "name": "activesocket",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},

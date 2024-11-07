@@ -6,9 +6,11 @@ CREATE TABLE IF NOT EXISTS "crashreport" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "device" (
-	"id" varchar(20) NOT NULL,
+	"id" varchar(20) PRIMARY KEY NOT NULL,
 	"name" varchar(50) NOT NULL,
-	"userid" text NOT NULL
+	"userid" text NOT NULL,
+	"last_known_location" geometry(point),
+	"activesocket" varchar(20)
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "session" (

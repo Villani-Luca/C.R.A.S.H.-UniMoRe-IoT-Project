@@ -1,0 +1,24 @@
+{
+  "name": "clientsim",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx ts-node ./src/index.ts",
+    "cc": "npx ts-node ./src/index.ts crashclient",
+    "cc1": "npx ts-node ./src/index.ts crashclient DEV1",
+    "cc2": "npx ts-node ./src/index.ts crashclient DEV2",
+    "cc3": "npx ts-node ./src/index.ts crashclient DEV3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "socket.io-client": "^4.8.1"
+  }
+}
