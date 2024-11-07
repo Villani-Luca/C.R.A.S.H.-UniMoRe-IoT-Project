@@ -1,5 +1,5 @@
 
-![2024_10_31_barebones-lonewolf-22849065](https://github.com/user-attachments/assets/c0d08cdd-adf1-45d1-ab00-d11a1c8f1c62)
+![Progetto senza titolo](https://github.com/user-attachments/assets/d3bdb664-5fdc-446d-9361-8037283497e7)
 
 
 ## Requisiti
