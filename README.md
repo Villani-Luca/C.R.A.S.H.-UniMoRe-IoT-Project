@@ -1,3 +1,7 @@
+
+![2024_10_31_barebones-lonewolf-22849065](https://github.com/user-attachments/assets/c0d08cdd-adf1-45d1-ab00-d11a1c8f1c62)
+
+
 ## Requisiti
 - Rilevazione di incidente (impatto + (OPT) ribaltamento, (OPT) sensore fumo)  
 - Coordinate dell'incidente
