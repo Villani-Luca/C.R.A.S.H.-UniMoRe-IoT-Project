@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        ".": "plaintext",
+        "array": "cpp",
+        "vector": "cpp"
+    }
+}
