@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "commander": "^12.1.0",
+    "mqtt": "^5.10.1",
     "socket.io-client": "^4.8.1"
   }
 }
