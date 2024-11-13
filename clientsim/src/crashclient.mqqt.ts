@@ -5,10 +5,23 @@ import mqtt from "mqtt"; // import namespace "mqtt"
 export function crash_mqtt(device: string) {
   console.info("Avvio crash socket client DEVICE: " + device);
 
-  const client  = mqtt.connect("localhost:3000");
+
+  const client  = mqtt.connect("mqtt://localhost:1883", {
+    username: 'admin',
+    password: 'instar'
+  });
+  client.on('connect', function () {
+    console.log("presence")
+    client.publish('presence', 'Hello mqtt')
+  })
+
+  client.on('error', function (err) {
+    console.log('error', err)
+  })
+
   if(!client.connected){
-    console.log("Error during connection");
-    return;
+    client.connected
+    console.log("Error during connection mqqt");
   }
 
   const crash_topic = `update/${device.toLowerCase()}/crash`;
