@@ -12,12 +12,14 @@
 <h4><summary>Table of Contents</summary></h4>
 <ol>
   <li><a href="#abstract">Abstract</a></li>
+  <li><a href="#goals-and-reasons">Goals and Reasons</a></li>
 </ol>
 
 
-#Abstract
+# Abstract
+C.R.A.S.H wants to set a new milestone in the car market.
 
-
+# Goals and Reasons
 
 ## Requisiti
 - Rilevazione di incidente (impatto + (OPT) ribaltamento, (OPT) sensore fumo)  
