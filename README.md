@@ -20,7 +20,7 @@
 C.R.A.S.H wants to set a new milestone in the car market.
 
 # Goals and Reasons
-This project has been developed for the exam *IoT & 3D Intelligent Systems* @ University of Modena and Reggio Emilia we were willing to propose an innovative solution to a problem that affects the world entirely, the assistance in case of collisions or impacts between vehicles.
+This project has been developed for the exam *IoT & 3D Intelligent Systems* @ University of Modena and Reggio Emilia, we were willing to propose an innovative solution to a problem that affects the world entirely, the assistance in case of collisions or impacts between vehicles.
 
 ## Requisiti
 - Rilevazione di incidente (impatto + (OPT) ribaltamento, (OPT) sensore fumo)  
