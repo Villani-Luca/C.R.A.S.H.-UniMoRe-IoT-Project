@@ -1,5 +1,10 @@
+<!-- PROJECT LOGO -->
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/d3bdb664-5fdc-446d-9361-8037283497e7" alt="Logo" width="200" height="200">
 
-![Progetto senza titolo](https://github.com/user-attachments/assets/d3bdb664-5fdc-446d-9361-8037283497e7)
+  <h1 align="center">Harvest Easy</h1>
+
+</div>
 
 
 ## Requisiti
