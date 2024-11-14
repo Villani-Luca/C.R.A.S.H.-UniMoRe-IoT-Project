@@ -6,31 +6,31 @@ export function crash_mqtt(device: string) {
   console.info("Avvio crash socket client DEVICE: " + device);
 
 
-  const client  = mqtt.connect("mqtt://localhost:1883", {
+  const client = mqtt.connect("mqtt://localhost:1883", {
     username: 'admin',
     password: 'instar'
   });
-  client.on('connect', function () {
+  client.on('connect', function() {
     console.log("presence")
     client.publish('presence', 'Hello mqtt')
   })
 
-  client.on('error', function (err) {
+  client.on('error', function(err) {
     console.log('error', err)
   })
 
-  if(!client.connected){
+  if (!client.connected) {
     client.connected
     console.log("Error during connection mqqt");
   }
 
   const crash_topic = `update/${device.toLowerCase()}/crash`;
   client.subscribe(crash_topic)
-  
+
   client.on("message", (topic, message) => {
     console.log(topic, message.toString());
 
-    if(topic === crash_topic){
+    if (topic === crash_topic) {
       server_crash_notification(message.toString());
     }
   });
@@ -50,7 +50,7 @@ export function crash_mqtt(device: string) {
       latitude: 44 + Math.random(),
       longitude: 10 + Math.random(),
     });
-  }, 10000) 
+  }, 10000)
 
 
   // disconnect after 2 minutes
@@ -71,4 +71,5 @@ function notify_crash(client: mqtt.MqttClient, data: CrashNotification) {
 
 function server_crash_notification(message: string) {
   const data: CrashNotificationAnon = JSON.parse(message);
+  console.log(data)
 }

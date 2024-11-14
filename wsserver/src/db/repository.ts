@@ -3,7 +3,7 @@ import type { DrizzleDb } from "./index";
 import { crashreport, CrashReport, CrashReportCreate, Device, device } from "./schema";
 
 
-export function update_device_lastknownlocation(db: DrizzleDb, data: Pick<Device, 'lastknownlocation' | 'id' | 'activesocket'>) {
+export function update_device_lastknownlocation(db: DrizzleDb, data: Pick<Device, 'lastknownlocation' | 'id'>) {
   return db
     .update(device)
     .set(data)

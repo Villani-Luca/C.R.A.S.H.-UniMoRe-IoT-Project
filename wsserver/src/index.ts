@@ -1,18 +1,42 @@
 import 'dotenv/config';
-import express from 'express';
-import http from 'http';
-import { Server } from 'socket.io';
-import { client_socket_connected } from './clientsocketfn';
+import { client_position_update, crash_client_notification } from './clientsocketfn';
+import mqtt from 'mqtt';
 
 
-const app = express();
-const server = http.createServer(app);
+const client = mqtt.connect(process.env.MQTT_URL!, {
+  username: process.env.MQTT_USERNAME,
+  password: process.env.MQTT_PASSWORD
+});
 
-const io = new Server(server);
-io.on('connection', (socket) => client_socket_connected(socket, io));
+client.on('connect', () => {
 
-server.listen(process.env.PORT, () => {
-  console.log(`Listening on *:${process.env.PORT}`);
+})
+
+client.on('error', (err) => {
+  console.error('[MQQT] Error', err);
+})
+
+client.subscribe('client-position-update', (err) => {
+  console.log('Client Position Update - Sub Error', err);
+})
+
+client.subscribe('client-crash-notification', (err) => {
+  console.log('Client Crash Notification - Sub Error', err);
+})
+
+client.on('message', (topic, data) => {
+  const message = data.toString();
+
+  switch (topic) {
+    case "client-position-update":
+      console.log(message);
+      client_position_update(message);
+      break;
+    case "client-crash-notification":
+      console.log(message);
+      crash_client_notification(message, client);
+      break;
+  }
 })
 
 // TESTS
