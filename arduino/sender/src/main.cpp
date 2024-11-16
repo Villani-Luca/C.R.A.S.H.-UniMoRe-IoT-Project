@@ -7,20 +7,23 @@
 #include <ArduinoJson.h>
 #include "ArduinoMqttClient.h"
 
-// please enter your sensitive data in the Secret tab/arduino_secrets.h
+#include "messages.h"
+
+// uncomment to enable mqtt
+// #define MQTT_ENABLE 
+
+// ##### WIFI #####
+int status = WL_IDLE_STATUS;
 WiFiSSLClient wificlient;
 char ssid[] = SECRET_SSID; // your network SSID (name)
 char pass[] = SECRET_PASS; // your network password (use for WPA, or use as key for WEP)
 
-// TODO da cambiarli in modo che usino / invece che trattini
-const char position_topic[] = "client-position-update";
-const char crash_notification_topic[] = "client-crash-notification";
-const char crash_topic[] = "update/"SECRET_DEVICE_ID"/crash"; // TODO sarebbe carino farlo che sia configurabile
+// ##### MQTT #####
+String device_crash_topic = DEVICE_CRASH_TOPIC(SECRET_DEVICE_ID); 
+constexpr short mqtt_keep_alive = 90 * 1000; // 90 secondi keep alive
 MqttClient mqttclient(wificlient);
 
-int led = LED_BUILTIN;
-int status = WL_IDLE_STATUS;
-
+// ##### Led Matrix #####
 enum SetupPhase
 {
   MATRIX_OK = 0,
@@ -29,7 +32,6 @@ enum SetupPhase
   MATRIX_L = 3
 };
 
-// LED MATRIX
 ArduinoLEDMatrix matrix;
 const unsigned long frames[4][3] = {
     {0x3184a444, 0x42081100, 0xa0040000}, // HEARTH
@@ -38,9 +40,11 @@ const unsigned long frames[4][3] = {
     {0x00030030, 0x03003003, 0x003FC000}, // L
 };
 
+// ##### Update control params #####
 uint64_t last_position_update_ts = 0;
 uint64_t last_crash_update_ts = 0;
 
+// ##### decls #####
 void printWifiStatus();
 void setup_wifi();
 void setup_mqtt();
@@ -51,80 +55,48 @@ void setup()
   matrix.begin();
 
   setup_wifi();
+
+  #if defined(MQTT_ENABLE)
   setup_mqtt();
+  #endif
   
   matrix.loadFrame(frames[MATRIX_OK]);
 }
 
 void loop()
 {
-  int messageSize = mqttclient.parseMessage();
-  if (messageSize) {
-    // we received a message, print out the topic and contents
-    Serial.print("Received a message with topic '");
-    Serial.print(mqttclient.messageTopic());
-    Serial.print("', length ");
-    Serial.print(messageSize);
-    Serial.println(" bytes:");
+  // check sensors for crash
+  // if crash send crash
+  // else check if position update threshold has passed
+  // if threshold passed then send position update
 
-    // use the Stream interface to print the contents
-    while (mqttclient.available()) {
-      Serial.print((char)mqttclient.read());
-    }
-    Serial.println();
-    Serial.println();
-  }
+  #if defined(MQTT_ENABLE)
+  mqttclient.poll();
 
   uint64_t now = millis();
   if (now - last_position_update_ts > 10000)
   {
     last_position_update_ts = now;
-
-    // creat JSON message for Socket.IO (event)
-    DynamicJsonDocument doc(1024);
-    JsonObject json = doc.to<JsonObject>();
-
-    json["device"] = SECRET_DEVICE_ID;
-    json["longitude"] = 10.402873236388588;
-    json["latitude"] = 44.085398523165935;
-
-    // JSON to String (serializion)
-    String output;
-    serializeJson(doc, output);
-  
-    // Print JSON for debugging
-    Serial.println(output);
-
-    mqttclient.beginMessage(position_topic);
-    mqttclient.print(output);
-    mqttclient.endMessage();
+    send_position_update(mqttclient, {
+      	.device = SECRET_DEVICE_ID,
+        .longitude = 10.402873236388588,
+        .latitude = 44.085398523165935,
+    });
   }
 
   if (now - last_crash_update_ts  > 30000)
   {
     last_crash_update_ts = now;
-
-    // creat JSON message for Socket.IO (event)
-    DynamicJsonDocument doc(1024);
-    JsonObject json = doc.to<JsonObject>();
-
-    json["device"] = SECRET_DEVICE_ID;
-    json["longitude"] = 12.402873236388588;
-    json["latitude"] = 43.085398523165935;
-
-    // JSON to String (serializion)
-    String output;
-    serializeJson(doc, output);
-  
-    // Print JSON for debugging
-    Serial.println(output);
-
-    mqttclient.beginMessage(crash_notification_topic);
-    mqttclient.print(output);
-    mqttclient.endMessage();
+    send_crash_notification(mqttclient, {
+        .device = SECRET_DEVICE_ID,
+        .longitude = 12.402873236388588,
+        .latitude = 43.085398523165935,
+    });
   }
+  #endif
 }
 
+// ##### SETUP FUNCTION #####
 void printWifiStatus()
 {
   // print the SSID of the network you're attached to:
@@ -183,6 +155,8 @@ void setup_mqtt(){
     while(1);
   }
   
+  mqttclient.onMessage(onMqttMessage);
+  mqttclient.setKeepAliveInterval(mqtt_keep_alive);
   mqttclient.setUsernamePassword(SECRET_MQTT_USER, SECRET_MQTT_PASS);
   if(!mqttclient.connect(SECRET_MQTT_HOST, SECRET_MQTT_PORT)){
     Serial.print("MQTT connection failed! Error Code = ");
@@ -195,8 +169,31 @@ void setup_mqtt(){
   Serial.println();
 
   Serial.print("Subscribing to ");
-  Serial.print(crash_topic);
+  Serial.print(device_crash_topic);
   Serial.println();
 
-  mqttclient.subscribe(crash_topic);
+  mqttclient.subscribe(device_crash_topic);
+}
+
+// ##### #####
+void onMqttMessage(int messageSize) {
+    String messagetopic = mqttclient.messageTopic();
+
+    // we received a message, print out the topic and contents
+    Serial.print("Received a message with topic '");
+    Serial.print(messagetopic);
+    Serial.print("', length ");
+    Serial.print(messageSize);
+    Serial.println(" bytes:");
+
+    // use the Stream interface to print the contents
+    while (mqttclient.available()) {
+      Serial.print((char)mqttclient.read());
+    }
+    Serial.println();
+    Serial.println();
+
+    if(messagetopic == device_crash_topic){
+      // call device crash topic handler
+    }
 }
