@@ -1,16 +1,25 @@
-#include "Arduino.h"
-#include "WiFiS3.h"
-
-#include "arduino_secrets.h"
+#include <Arduino.h>
+#include <WiFiS3.h>
 #include <Arduino_LED_Matrix.h>
-
 #include <ArduinoJson.h>
-#include "ArduinoMqttClient.h"
+#include <ArduinoMqttClient.h>
+
+// ##### Features #####
+#define MQTT_DISABLE
+#define WIFI_DISABLE
+//#define SENSOR_ACCEL_DISABLE 
+//#define SENSOR_GPS_DISABLE 
+
+#define SENSOR_ACCEL_ENABLED !defined(SENSOR_ACCEL_DISABLE)
+#define SENSOR_GPS_ENABLED !defined(SENSOR_ACCEL_DISABLE)
+#define SENSOR_ENABLED SENSOR_ACCEL_ENABLED || SENSOR_GPS_ENABLED
+#define WIFI_ENABLED !defined(WIFI_DISABLE)
+#define MQTT_ENABLED WIFI_ENABLED && !defined(MQTT_DISABLE)
 
 #include "messages.h"
+#include "arduino_secrets.h"
+#include "sensors.h"
 
-// uncomment to enable mqtt
-// #define MQTT_ENABLE 
 
 // ##### WIFI #####
 int status = WL_IDLE_STATUS;
@@ -43,21 +52,37 @@ const unsigned long frames[4][3] = {
 // ##### Update control params #####
 uint64_t last_position_update_ts = 0;
 uint64_t last_crash_update_ts = 0;
+uint64_t last_accel_reading_ts = 0;
+
+float acceleration_threshold = 2;
+//constexpr float gravity = 9.8;
+
+constexpr byte max_data_points = 10;
+constexpr float alpha_step = 1.0 / max_data_points;
+float alpha = 1.0;
+float acceleration_avg = 0;
 
 // ##### decls #####
 void printWifiStatus();
 void setup_wifi();
 void setup_mqtt();
+float accel_module(AccelReading reading);
 
 void setup()
 {
   Serial.begin(9600); // initialize serial communication
   matrix.begin();
 
+  #if WIFI_ENABLED
   setup_wifi();
+  #endif
 
-  #if defined(MQTT_ENABLE)
+  #if MQTT_ENABLED
   setup_mqtt();
+  #endif
+
+  #if SENSOR_ENABLED
+  setup_sensors();
   #endif
   
   matrix.loadFrame(frames[MATRIX_OK]);
@@ -65,35 +90,96 @@ void setup()
 
 void loop()
 {
+  AccelReading accel_reading;
+  Position gps_position = {
+    .longitude = 10.402873236388588,
+    .latitude = 44.085398523165935,
+  };
+  uint64_t now = millis();
+  bool crash = false;
+
+  #if SENSOR_ACCEL_ENABLED
+  if(now - last_accel_reading_ts > 200){
+    last_accel_reading_ts = now;
+    accel_read(accel_reading);
+    float module = accel_module(accel_reading);
+    acceleration_avg = (alpha * module) + (1.0 - alpha) * acceleration_avg;
+
+    Serial.print("X: "); Serial.print(accel_reading.x); Serial.print(" ");
+    Serial.print("Y: "); Serial.print(accel_reading.y); Serial.print(" ");
+    Serial.print("Z: "); Serial.print(accel_reading.z); Serial.print(" ");
+    Serial.print("T: "); Serial.print(module); Serial.print(" ");
+    Serial.print("A: "); Serial.print(acceleration_avg); Serial.print(" ");
+    Serial.println();
+
+    // TODO: sistema di controllo piú sofisticato per evitare falsi positivi ecc...
+    if(module - acceleration_avg > acceleration_threshold){
+      Serial.println("CRASH CRASH CRASH CRASH CRASH");
+      crash = true;
+    }
+
+    if(alpha > alpha_step){
+      alpha -= alpha_step;
+    }
+  }
+  #endif
+
   // check sensors for crash
   // if crash send crash
   // else check if position update threshold has passed
   // if threshold passed then send position update
 
-  #if defined(MQTT_ENABLE)
+  #if MQTT_ENABLED
   mqttclient.poll();
 
-  uint64_t now = millis();
   if (now - last_position_update_ts > 10000)
   {
     last_position_update_ts = now;
     send_position_update(mqttclient, {
       	.device = SECRET_DEVICE_ID,
-        .longitude = 10.402873236388588,
-        .latitude = 44.085398523165935,
+        .longitude = gps_position.longitude,
+        .latitude = gps_position.latitude,
     });
   }
 
-  if (now - last_crash_update_ts  > 30000)
+  if (crash)
   {
     last_crash_update_ts = now;
     send_crash_notification(mqttclient, {
         .device = SECRET_DEVICE_ID,
-        .longitude = 12.402873236388588,
-        .latitude = 43.085398523165935,
+        .longitude = gps_position.longitude,
+        .latitude = gps_position.latitude,
     });
   }
   #endif
+}
+
+
+// ##### #####
+float accel_module(AccelReading reading){
+  return sqrtf(reading.x*reading.x + reading.y*reading.y + reading.z*reading.z);
+}
+
+void onMqttMessage(int messageSize) {
+    String messagetopic = mqttclient.messageTopic();
+
+    // we received a message, print out the topic and contents
+    Serial.print("Received a message with topic '");
+    Serial.print(messagetopic);
+    Serial.print("', length ");
+    Serial.print(messageSize);
+    Serial.println(" bytes:");
+
+    // use the Stream interface to print the contents
+    while (mqttclient.available()) {
+      Serial.print((char)mqttclient.read());
+    }
+    Serial.println();
+    Serial.println();
+
+    if(messagetopic == device_crash_topic){
+      // call device crash topic handler
+    }
 }
 
 // ##### SETUP FUNCTION #####
@@ -173,27 +259,4 @@ void setup_mqtt(){
   Serial.println();
 
   mqttclient.subscribe(device_crash_topic);
-}
-
-// ##### #####
-void onMqttMessage(int messageSize) {
-    String messagetopic = mqttclient.messageTopic();
-
-    // we received a message, print out the topic and contents
-    Serial.print("Received a message with topic '");
-    Serial.print(messagetopic);
-    Serial.print("', length ");
-    Serial.print(messageSize);
-    Serial.println(" bytes:");
-
-    // use the Stream interface to print the contents
-    while (mqttclient.available()) {
-      Serial.print((char)mqttclient.read());
-    }
-    Serial.println();
-    Serial.println();
-
-    if(messagetopic == device_crash_topic){
-      // call device crash topic handler
-    }
 }

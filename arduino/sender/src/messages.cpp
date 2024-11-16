@@ -1,5 +1,7 @@
 #include "messages.h"
 
+void publish_json(MqttClient mqtt, JsonDocument json, const char* topic);
+
 void send_position_update(MqttClient mqtt, PositionUpdate data){
     JsonDocument json;
 
@@ -29,4 +31,8 @@ void publish_json(MqttClient mqtt, JsonDocument json, const char* topic){
     mqtt.beginMessage(topic);
     mqtt.print(output);
     mqtt.endMessage();
+}
+
+String device_topic(const char* d) {
+    return "update/" + String(d) + "/crash";
 }

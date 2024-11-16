@@ -1,0 +1,1 @@
+l'accelerometro ADLX345 usa 3.3 volt poi unisce sda e scl ai rispettivi pin su arduino, ovviamente anche gnd

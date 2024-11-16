@@ -21,7 +21,4 @@ struct CrashNotification {
 
 void send_position_update(MqttClient mqtt, PositionUpdate data);
 void send_crash_notification(MqttClient mqtt, CrashNotification data);
-
-String device_topic(const char* d) {
-    return "update/" + String(d) + "/crash";
-}
+String device_topic(const char* d);
