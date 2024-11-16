@@ -1,7 +1,6 @@
 import { db } from "./db";
 import { CrashNotification, CrashNotificationAnon, PositionUpdate } from "./messages";
-import { DisconnectReason, Socket, Server } from "socket.io";
-import { create_crashreport, disconnect_device, get_device_inrange, update_device_lastknownlocation } from "./db/repository";
+import { create_crashreport, get_device_inrange, update_device_lastknownlocation } from "./db/repository";
 import mqtt from 'mqtt';
 
 export async function client_position_update(message: string) {
@@ -10,6 +9,7 @@ export async function client_position_update(message: string) {
   await update_device_lastknownlocation(db, {
     id: json.device!,
     lastknownlocation: { x: json.longitude, y: json.latitude },
+    lastknownupdate: new Date(),
   });
 }
 
@@ -21,6 +21,7 @@ export async function crash_client_notification(message: string, client: mqtt.Mq
     await update_device_lastknownlocation(tx as any, {
       id: json.device!,
       lastknownlocation: location,
+      lastknownupdate: new Date(),
     });
 
     await create_crashreport(tx as any, {
@@ -30,9 +31,10 @@ export async function crash_client_notification(message: string, client: mqtt.Mq
     })
   })
 
-  const devices_in_range = await get_device_inrange(db, { location, range: 10000 });
+  // TODO rendere parametrici range, timestamp e timerange
+  const devices_in_range = await get_device_inrange(db, { location, range: 10000, timestamp: new Date(), timerange: 5 * 60 });
   for (const device of devices_in_range.filter(x => x.id !== json.device)) {
-    const crash_topic = `update/${device.id.toLowerCase()}/crash`;
+    const crash_topic = `update/${device.id}/crash`;
     client.publish(
       crash_topic,
       JSON.stringify({
@@ -42,16 +44,3 @@ export async function crash_client_notification(message: string, client: mqtt.Mq
     )
   }
 }
-
-async function client_disconnect(reason: DisconnectReason, socket: Socket) {
-  console.log('Disconnected socket', socket.id, reason);
-  await disconnect_device(db, socket.id);
-}
-
-// export function client_socket_connected(socket: Socket, server: Server) {
-//   console.log('Socket connected', socket.id);
-//   socket.on('client-position-update', (message) => client_position_update(message, socket))
-//   socket.on('client-crash-notification', (message) => crash_client_notification(message, socket, server));
-//   socket.on('disconnect', (reason) => client_disconnect(reason, socket))
-// }
-

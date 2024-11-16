@@ -1,37 +1,8 @@
-/*
-  WiFi Web Server LED Blink
-
-  A simple web server that lets you blink an LED via the web.
-  This sketch will print the IP address of your WiFi module (once connected)
-  to the Serial Monitor. From there, you can open that address in a web browser
-  to turn on and off the LED_BUILTIN.
-
-  If the IP address of your board is yourAddress:
-  http://yourAddress/H turns the LED on
-  http://yourAddress/L turns it off
-
-  This example is written for a network using WPA encryption. For
-  WEP or WPA, change the WiFi.begin() call accordingly.
-
-  Circuit:
-  * Board with NINA module (Arduino MKR WiFi 1010, MKR VIDOR 4000 and Uno WiFi Rev.2)
-  * LED attached to pin 9
-
-  created 25 Nov 2012
-  by Tom Igoe
-
-  Find the full UNO R4 WiFi Network documentation here:
-  https://docs.arduino.cc/tutorials/uno-r4-wifi/wifi-examples#simple-webserver
- */
-
 #include "Arduino.h"
 #include "WiFiS3.h"
 
 #include "arduino_secrets.h"
 #include <Arduino_LED_Matrix.h>
-
-#include <WebSocketsClient.h>
-#include <SocketIOclient.h>
 
 #include <ArduinoJson.h>
 #include "ArduinoMqttClient.h"
@@ -40,12 +11,11 @@
 WiFiSSLClient wificlient;
 char ssid[] = SECRET_SSID; // your network SSID (name)
 char pass[] = SECRET_PASS; // your network password (use for WPA, or use as key for WEP)
-int keyIndex = 0;          // your network key index number (needed only for WEP)
 
 // TODO da cambiarli in modo che usino / invece che trattini
 const char position_topic[] = "client-position-update";
 const char crash_notification_topic[] = "client-crash-notification";
-const char crash_topic[] = "update/dev1/crash"; // TODO sarebbe carino farlo che sia configurabile
+const char crash_topic[] = "update/"SECRET_DEVICE_ID"/crash"; // TODO sarebbe carino farlo che sia configurabile
 MqttClient mqttclient(wificlient);
 
 int led = LED_BUILTIN;

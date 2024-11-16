@@ -20,7 +20,7 @@ export const device = pgTable('device', {
 	name: varchar('name', { length: 50 }).notNull(),
 	userid: text('userid').references(() => user.id).notNull(),
 	lastknownlocation: geometry('last_known_location', { type: 'point', mode: 'xy', srid: 4326 }).notNull(),
-	activesocket: varchar('activesocket', { length: 20 }),
+	lastknownupdate: timestamp('last_known_update', { withTimezone: true, mode: 'date' }).notNull()
 })
 
 export const crashreport = pgTable('crashreport', {
