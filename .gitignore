@@ -2,3 +2,4 @@ clientsim/node_modules
 wsserver/node_modules/.bin
 wsserver/node_modules
 arduino/sender/src/arduino_secrets.h
+wsserver/.env

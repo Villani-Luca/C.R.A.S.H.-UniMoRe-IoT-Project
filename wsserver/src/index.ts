@@ -5,23 +5,24 @@ import mqtt from 'mqtt';
 
 const client = mqtt.connect(process.env.MQTT_URL!, {
   username: process.env.MQTT_USERNAME,
-  password: process.env.MQTT_PASSWORD
+  password: process.env.MQTT_PASSWORD,
 });
 
+console.log('Client is connected', client.connected);
 client.on('connect', () => {
+  console.log("Conneted");
 
+  client.subscribe('client-position-update', (err) => {
+    console.log('Client Position Update Subscription --- Error: ', err ?? 'none');
+  })
+
+  client.subscribe('client-crash-notification', (err) => {
+    console.log('Client Crash Notification Subscription --- Error: ', err ?? 'none');
+  })
 })
 
 client.on('error', (err) => {
   console.error('[MQQT] Error', err);
-})
-
-client.subscribe('client-position-update', (err) => {
-  console.log('Client Position Update - Sub Error', err);
-})
-
-client.subscribe('client-crash-notification', (err) => {
-  console.log('Client Crash Notification - Sub Error', err);
 })
 
 client.on('message', (topic, data) => {
