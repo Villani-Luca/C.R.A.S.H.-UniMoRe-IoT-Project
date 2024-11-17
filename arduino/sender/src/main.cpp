@@ -52,6 +52,14 @@ constexpr float alpha_step = 1.0 / max_data_points;
 float alpha = 1.0;
 float acceleration_avg = 0;
 
+AccelReading accel_reading;
+Position gps_position = {
+  //.longitude = 10.402873236388588,  // example value
+  //.latitude = 44.085398523165935,   // example value
+  .longitude = 0, 
+  .latitude = 0,   
+};
+
 // ##### decls #####
 void printWifiStatus();
 void setup_wifi();
@@ -79,12 +87,7 @@ void setup()
 }
 
 void loop()
-{
-  AccelReading accel_reading;
-  Position gps_position = {
-    .longitude = 10.402873236388588,
-    .latitude = 44.085398523165935,
-  };
+{  
   uint64_t now = millis();
   bool crash = false;
 
@@ -115,17 +118,17 @@ void loop()
   #endif
 
   #if SENSOR_GPS_ENABLED
-
   if(now - last_gps_reading_ts > 200){
     last_gps_reading_ts = now;
-    gps_read(gps_position);
-  
-    Serial.print("Latitude= "); 
-    Serial.print(gps_position.latitude, 6);
-    Serial.print(" Longitude= "); 
-    Serial.print(gps_position.longitude, 6);
-    Serial.println();
-    Serial.println();
+    int gps_result = gps_read(gps_position);
+    if(gps_result > 0){
+      Serial.print("Latitude= "); 
+      Serial.print(gps_position.latitude, 6);
+      Serial.print(" Longitude= "); 
+      Serial.print(gps_position.longitude, 6);
+      Serial.println();
+      Serial.println();
+    }
   }
   #endif
 
@@ -137,6 +140,7 @@ void loop()
   #if MQTT_ENABLED
   mqttclient.poll();
 
+  // TODO un check per posizione diverso da 0 ? 
   if (now - last_position_update_ts > 10000)
   {
     last_position_update_ts = now;

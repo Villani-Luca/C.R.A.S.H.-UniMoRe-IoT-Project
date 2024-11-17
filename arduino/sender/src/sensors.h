@@ -25,4 +25,9 @@ struct Position {
 
 void setup_sensors();
 void accel_read(AccelReading& reading);
-void gps_read(Position& position);
+
+/**
+ * returns 1 if gps position has been updated
+ * return 0 if gps position has no been updated
+ */
+int gps_read(Position& position);

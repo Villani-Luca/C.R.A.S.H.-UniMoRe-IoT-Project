@@ -64,7 +64,7 @@ void accel_read(AccelReading& reading) {
     #endif
 }
 
-void gps_read(Position& position){
+int gps_read(Position& position){
     #if SENSOR_GPS_ENABLED
     while (Serial1.available() > 0){
         // get the byte data from the GPS
@@ -77,12 +77,17 @@ void gps_read(Position& position){
             Serial.print("Satellites ");
             Serial.println(gps.satellites.value());
             #endif
+
+            return 1;
         }
+        return 0;
     }
     #else
     position.latitude = 0;
     position.longitude = 0;
     #endif
+
+    return 0;
 }
 
 
