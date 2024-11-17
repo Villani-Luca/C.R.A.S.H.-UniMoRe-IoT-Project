@@ -2,6 +2,7 @@
 #include "ArduinoMqttClient.h"
 #include "ArduinoJson.h"
 #include "arduino_secrets.h"
+#include "modules.h"
 
 #define POSITION_TOPIC "client-position-update"
 #define CRASH_TOPIC "client-crash-notification"

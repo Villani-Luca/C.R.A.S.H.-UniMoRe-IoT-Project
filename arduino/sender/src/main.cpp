@@ -3,23 +3,11 @@
 #include <Arduino_LED_Matrix.h>
 #include <ArduinoJson.h>
 #include <ArduinoMqttClient.h>
-
-// ##### Features #####
-#define MQTT_DISABLE
-#define WIFI_DISABLE
-//#define SENSOR_ACCEL_DISABLE 
-//#define SENSOR_GPS_DISABLE 
-
-#define SENSOR_ACCEL_ENABLED !defined(SENSOR_ACCEL_DISABLE)
-#define SENSOR_GPS_ENABLED !defined(SENSOR_ACCEL_DISABLE)
-#define SENSOR_ENABLED SENSOR_ACCEL_ENABLED || SENSOR_GPS_ENABLED
-#define WIFI_ENABLED !defined(WIFI_DISABLE)
-#define MQTT_ENABLED WIFI_ENABLED && !defined(MQTT_DISABLE)
+#include "modules.h"
 
 #include "messages.h"
 #include "arduino_secrets.h"
 #include "sensors.h"
-
 
 // ##### WIFI #####
 int status = WL_IDLE_STATUS;
