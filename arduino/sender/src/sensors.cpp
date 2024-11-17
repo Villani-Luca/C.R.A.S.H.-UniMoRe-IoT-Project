@@ -9,9 +9,15 @@
 Adafruit_ADXL345_Unified accel;
 #endif
 
+
 #if SENSOR_GPS_ENABLED
+
+// GPS usa Serial1 pin 0 e 1
+// configurazione:
+//  - LETTURA: MODULO TX => ARDUINO RX
+//  - SCRITTURA/COMANDI: MODULO RX => TX TRAMITE LEVEL SHIFT DOWN 
+//    per evitare di friggere il modulo
 TinyGPSPlus gps;
-SoftwareSerial gps_serial(SENSOR_GPS_RX_PIN,SENSOR_GPS_TX_PIN);
 #endif
 
 
@@ -28,11 +34,6 @@ void setup_accel(){
 void setup_gps(){
     #if SENSOR_GPS_ENABLED
     Serial1.begin(9600);
-    //gps_serial.begin(SENSOR_GPS_BAUD_RATE);
-    if(!true){
-        Serial.println("Error during setup of gps sensor");
-        while(1);
-    }
     #endif
 }
 
