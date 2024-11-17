@@ -115,16 +115,16 @@ void loop()
 
   #if SENSOR_GPS_ENABLED
 
-  if(true){
+  if(now - last_gps_reading_ts > 200){
     last_gps_reading_ts = now;
     gps_read(gps_position);
-    
-    // Serial.print("Latitude= "); 
-    // Serial.print(gps_position.latitude, 6);
-    // Serial.print(" Longitude= "); 
-    // Serial.print(gps_position.longitude, 6);
-    // Serial.println();
-    // Serial.println();
+  
+    Serial.print("Latitude= "); 
+    Serial.print(gps_position.latitude, 6);
+    Serial.print(" Longitude= "); 
+    Serial.print(gps_position.longitude, 6);
+    Serial.println();
+    Serial.println();
   }
   #endif
 

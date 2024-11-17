@@ -27,7 +27,8 @@ void setup_accel(){
 
 void setup_gps(){
     #if SENSOR_GPS_ENABLED
-    gps_serial.begin(SENSOR_GPS_BAUD_RATE);
+    Serial1.begin(9600);
+    //gps_serial.begin(SENSOR_GPS_BAUD_RATE);
     if(!true){
         Serial.println("Error during setup of gps sensor");
         while(1);
@@ -64,33 +65,22 @@ void accel_read(AccelReading& reading) {
 
 void gps_read(Position& position){
     #if SENSOR_GPS_ENABLED
-
-    while (gps_serial.available() > 0){
+    while (Serial1.available() > 0){
         // get the byte data from the GPS
-        byte gpsData = gps_serial.read();
-        Serial.write(gpsData);
-    }
+        gps.encode(Serial1.read());
+        if(gps.location.isUpdated()){
+            position.latitude = gps.location.lat();
+            position.longitude = gps.location.lng();
 
-    /*
-    while (gps_serial.available() > 0){
-        Serial.println("boh");
-        Serial.print(char(gps_serial.read()));
-        // get the byte data from the GPS
-        // gps.encode(gps_serial.read());
-        // if(gps.location.isUpdated()){
-        //     position.latitude = gps.location.lat();
-        //     position.longitude = gps.location.lng();
-
-        //     #ifdef ENABLE_DEBUG
-        //     Serial.print("Satellites ");
-        //     Serial.println(gps.satellites.value());
-        //     #endif
-        // }
+            #ifdef ENABLE_DEBUG
+            Serial.print("Satellites ");
+            Serial.println(gps.satellites.value());
+            #endif
+        }
     }
-    */
     #else
-        position.latitude = 0;
-        position.longitude = 0;
+    position.latitude = 0;
+    position.longitude = 0;
     #endif
 }
 
