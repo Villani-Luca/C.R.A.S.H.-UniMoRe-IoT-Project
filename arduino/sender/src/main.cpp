@@ -41,6 +41,7 @@ const unsigned long frames[4][3] = {
 uint64_t last_position_update_ts = 0;
 uint64_t last_crash_update_ts = 0;
 uint64_t last_accel_reading_ts = 0;
+uint64_t last_gps_reading_ts = 0;
 
 float acceleration_threshold = 2;
 //constexpr float gravity = 9.8;
@@ -109,6 +110,21 @@ void loop()
     if(alpha > alpha_step){
       alpha -= alpha_step;
     }
+  }
+  #endif
+
+  #if SENSOR_GPS_ENABLED
+
+  if(true){
+    last_gps_reading_ts = now;
+    gps_read(gps_position);
+    
+    // Serial.print("Latitude= "); 
+    // Serial.print(gps_position.latitude, 6);
+    // Serial.print(" Longitude= "); 
+    // Serial.print(gps_position.longitude, 6);
+    // Serial.println();
+    // Serial.println();
   }
   #endif
 
