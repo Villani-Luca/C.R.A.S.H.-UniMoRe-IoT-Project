@@ -43,8 +43,9 @@ uint64_t last_crash_update_ts = 0;
 uint64_t last_accel_reading_ts = 0;
 uint64_t last_gps_reading_ts = 0;
 
-float acceleration_threshold = 2;
-//constexpr float gravity = 9.8;
+// triggers crash notification se l'accelerazione istantanea é maggiore 
+// del valore dell'treshold rispetto all'accelerazione media 
+float acceleration_threshold = 1.1;
 
 constexpr byte max_data_points = 10;
 constexpr float alpha_step = 1.0 / max_data_points;
@@ -102,7 +103,7 @@ void loop()
     Serial.println();
 
     // TODO: sistema di controllo piú sofisticato per evitare falsi positivi ecc...
-    if(module - acceleration_avg > acceleration_threshold){
+    if(module > acceleration_avg*acceleration_threshold){
       Serial.println("CRASH CRASH CRASH CRASH CRASH");
       crash = true;
     }
