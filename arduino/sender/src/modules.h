@@ -1,15 +1,17 @@
 #pragma once
 
 // ##### Features #####
-#define MQTT_DISABLE
-#define WIFI_DISABLE
-#define SENSOR_ACCEL_DISABLE 
+//#define MQTT_DISABLE
+//#define WIFI_DISABLE
+//#define SENSOR_ACCEL_DISABLE 
 //#define SENSOR_GPS_DISABLE 
+//#define LCD_DISABLE
 
 #define SENSOR_ACCEL_ENABLED !defined(SENSOR_ACCEL_DISABLE)
 #define SENSOR_GPS_ENABLED !defined(SENSOR_GPS_DISABLE)
 #define SENSOR_ENABLED SENSOR_ACCEL_ENABLED || SENSOR_GPS_ENABLED
 #define WIFI_ENABLED !defined(WIFI_DISABLE)
 #define MQTT_ENABLED WIFI_ENABLED && !defined(MQTT_DISABLE)
+#define LCD_ENABLED !defined(LCD_DISABLE)
 
 #define ENABLE_DEBUG

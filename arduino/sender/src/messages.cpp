@@ -33,6 +33,15 @@ void publish_json(MqttClient mqtt, JsonDocument json, const char* topic){
     mqtt.endMessage();
 }
 
+void parse_crash_alert(const char* msg, CrashAlert& alert){
+    JsonDocument doc;
+
+    deserializeJson(doc, msg);
+
+    alert.latitude = (double) doc["latitude"];
+    alert.longitude = (double) doc["longitude"];
+}
+
 String device_topic(const char* d) {
     return "update/" + String(d) + "/crash";
 }

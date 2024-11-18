@@ -20,6 +20,14 @@ struct CrashNotification {
     double latitude;
 };
 
+struct CrashAlert {
+    double longitude; 
+    double latitude;
+};
+
 void send_position_update(MqttClient mqtt, PositionUpdate data);
 void send_crash_notification(MqttClient mqtt, CrashNotification data);
+
+void parse_crash_alert(const char* msg, CrashAlert& alert);
+
 String device_topic(const char* d);

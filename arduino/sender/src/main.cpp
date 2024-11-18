@@ -8,6 +8,7 @@
 #include "messages.h"
 #include "arduino_secrets.h"
 #include "sensors.h"
+#include "lcd.h"
 
 // ##### WIFI #####
 int status = WL_IDLE_STATUS;
@@ -70,18 +71,11 @@ void setup()
 {
   Serial.begin(9600); // initialize serial communication
   matrix.begin();
-
-  #if WIFI_ENABLED
+  
+  lcd_setup();
   setup_wifi();
-  #endif
-
-  #if MQTT_ENABLED
   setup_mqtt();
-  #endif
-
-  #if SENSOR_ENABLED
   setup_sensors();
-  #endif
   
   matrix.loadFrame(frames[MATRIX_OK]);
 }
@@ -180,14 +174,19 @@ void onMqttMessage(int messageSize) {
     Serial.println(" bytes:");
 
     // use the Stream interface to print the contents
+    String contents = "";
     while (mqttclient.available()) {
-      Serial.print((char)mqttclient.read());
+      contents += (char) mqttclient.read();
     }
+    Serial.print(contents);
     Serial.println();
     Serial.println();
 
     if(messagetopic == device_crash_topic){
-      // call device crash topic handler
+      CrashAlert alert;
+      parse_crash_alert(contents.c_str(), alert);
+
+      // TODO call lcd monitor print
     }
 }
 
@@ -211,6 +210,8 @@ void printWifiStatus()
 }
 
 void setup_wifi(){
+  #if WIFI_ENABLED
+
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE)
   {
@@ -242,9 +243,12 @@ void setup_wifi(){
   Serial.println("Connected...");
 
   printWifiStatus(); // you're connected now, so print out the status
+
+  #endif
 }
 
 void setup_mqtt(){
+  #if MQTT_ENABLED
   if(status != WL_CONNECTED){
     Serial.println("Wifi not connected, interrupting");
     while(1);
@@ -268,4 +272,5 @@ void setup_mqtt(){
   Serial.println();
 
   mqttclient.subscribe(device_crash_topic);
+  #endif
 }
