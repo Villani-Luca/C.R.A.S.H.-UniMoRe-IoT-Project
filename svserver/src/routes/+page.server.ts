@@ -3,10 +3,12 @@ import { db } from '$lib/server/db';
 import { device } from '$lib/server/db/schema';
 
 export const load = (async () => {
-    const result = await db.select(
+    const deviceResult = await db.select(
     ).from(device);
+    
+    const deviceList = deviceResult.map((x) => ({name: x.name, lat: x.lastknownlocation?.x.valueOf()!, long: x.lastknownlocation?.y.valueOf()!}))
 
     
 
-    return {result};
+    return {deviceList };
 }) satisfies PageServerLoad;
