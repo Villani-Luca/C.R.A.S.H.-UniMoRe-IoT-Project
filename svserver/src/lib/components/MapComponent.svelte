@@ -4,7 +4,7 @@
 	let map;
 	let circle;
 	let markers = [];
-	let radius = 500; // Default radius in meters
+	let radius = 1000; // Default radius in meters
 
 	type User_Position = {
 		latitude: number;
@@ -79,20 +79,31 @@
 	}
 </script>
 
+
+<div class="flex flex-row">
+	<div class="flex-grow bg-white border-2 rounded-md p-2 m-2">
+		<div id="map"></div>
+	</div>
+	<div class="bg-white border-2 rounded-md p-4 m-2">
+		<div class="settings-panel">
+			<div>
+				<p class=" font-bold "> Settings Panel</p>
+			</div>
+			<label for="radius">Adjust Radius (meters):</label>
+			<input
+				type="range"
+				id="radius"
+				min="100"
+				max="5000"
+				bind:value={radius}
+				on:input={updateRadius}
+			/>
+			<label> {radius}</label>
+		</div>
+	</div>
+</div>
 <button on:click={() => addMarker()}> add marker</button>
 
-<div id="map"></div>
-<div class="settings-panel">
-	<label for="radius">Adjust Radius (meters): {radius}m</label>
-	<input
-		type="range"
-		id="radius"
-		min="100"
-		max="5000"
-		bind:value={radius}
-		on:input={updateRadius}
-	/>
-</div>
 
 <style>
 	#map {

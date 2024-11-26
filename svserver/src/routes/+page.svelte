@@ -3,8 +3,17 @@
 
 </script>
 
+<div class="flex flex-row">
+    <div>
+        <img src=""/>
+    </div>
+    <div>
+        <h1 class=" font-bold size-8">
+            C.R.A.S.H - Collision Check System
+        </h1>
+    </div>
+</div>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
-
+<div>
 <MapComponent/>
+</div>
