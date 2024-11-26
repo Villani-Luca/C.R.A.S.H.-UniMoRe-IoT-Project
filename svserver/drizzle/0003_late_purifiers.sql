@@ -1,0 +1,1 @@
+ALTER TABLE "device" ADD COLUMN "last_known_update" timestamp with time zone NOT NULL;

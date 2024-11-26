@@ -27,6 +27,7 @@
 		"@types/leaflet": "^1.9.14",
 		"@types/node": "^22.8.7",
 		"autoprefixer": "^10.4.20",
+		"bits-ui": "^0.21.16",
 		"clsx": "^2.1.1",
 		"drizzle-kit": "^0.22.0",
 		"eslint": "^9.7.0",
@@ -52,8 +53,9 @@
 		"@sveltejs/adapter-node": "^5.2.9",
 		"@types/express": "^5.0.0",
 		"drizzle-orm": "^0.33.0",
-		"leaflet": "^1.9.4",
 		"express": "^4.21.1",
+		"leaflet": "^1.9.4",
+		"postgis": "^1.0.5",
 		"postgres": "^3.4.4",
 		"socket.io": "^4.8.1"
 	}

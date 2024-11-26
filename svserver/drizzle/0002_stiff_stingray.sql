@@ -1,0 +1,1 @@
+ALTER TABLE "device" ALTER COLUMN "last_known_location" DROP NOT NULL;

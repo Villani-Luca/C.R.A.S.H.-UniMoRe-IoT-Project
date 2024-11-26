@@ -1,0 +1,1 @@
+ALTER TABLE "device" DROP COLUMN IF EXISTS "last_known_update";
