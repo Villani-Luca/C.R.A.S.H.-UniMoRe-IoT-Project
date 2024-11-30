@@ -129,12 +129,10 @@
 				className: 'my-custom-pin',
 				iconAnchor: [0, 24],
 				popupAnchor: [0, -36],
-				html: `<span style="${markerHtmlStylesUser}" />`
+				html: `<span style="${markerHtmlStylesUser}"/>`
 			});
 			L.marker([user_position.latitude ?? 100, user_position.longitude ?? 100],{icon:iconUser})
-				.addTo(map)
-				.bindPopup('You are here!')
-				.openPopup();
+				.addTo(map);
 
 			circle = L.circle(circle_center, {
 				color: 'green',

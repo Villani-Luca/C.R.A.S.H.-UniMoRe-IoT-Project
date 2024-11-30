@@ -1,39 +1,66 @@
-import type { PageServerLoad } from './$types';
+import { hash, verify } from '@node-rs/argon2';
+import { encodeBase32LowerCase } from '@oslojs/encoding';
+import { fail, redirect } from '@sveltejs/kit';
+import { eq } from 'drizzle-orm';
+import * as auth from '$lib/server/auth';
 import { db } from '$lib/server/db';
-import { crashreport, device, user } from '$lib/server/db/schema';
-import type { User_Position } from '$lib/helpers/user_position';
-import { sql, and } from 'drizzle-orm';
+import * as table from '$lib/server/db/schema';
+import type { Actions, PageServerLoad } from './$types';
 
+export const load: PageServerLoad = async (event) => {
+	if (event.locals.user) {
+		return redirect(302, '/demo/lucia');
+	}
+	return {};
+};
 
-export const load = (async ( {url}) => {
-    const deviceResult = await db.select(
-    ).from(device);
-    
-    const deviceList = deviceResult.map((x) => ({name: x.name, lat: x.lastknownlocation?.x.valueOf()!, long: x.lastknownlocation?.y.valueOf()!}));
-   
-    let radius: number = url.searchParams.has('r') ? parseInt(url.searchParams.get('r')!) : 5 ;
-    let lat: number = url.searchParams.has('lat') ? parseFloat(url.searchParams.get('lat')!) : 0;
-    let long: number = url.searchParams.has('long') ? parseFloat(url.searchParams.get('long')!) : 0;
+export const actions: Actions = {
+	default: async (event) => {
+		const formData = await event.request.formData();
+		const username = formData.get('username');
+		const password = formData.get('password');
 
-    let user_position: User_Position ={latitude: 0, longitude:0};
+		if (!validateUsername(username)) {
+			return fail(400, { message: 'Invalid username' });
+		}
+		if (!validatePassword(password)) {
+			return fail(400, { message: 'Invalid password' });
+		}
 
-    console.log(user_position.latitude);
+		const results = await db.select().from(table.user).where(eq(table.user.username, username));
 
-   const crashResult= await db
-          .select()
-          .from(crashreport)
-          .where(and(
-            sql`
-              ST_Dwithin(${crashreport.location}::geography, ST_MakePoint(${lat}, ${long})::geography, ${radius*1000})
-            `
-          ));
-    
-    const crashList = crashResult.map((x)=> ({lat: x.location.x, long: x.location.y, deviceId: x.deviceid, time: x.timestamp}));
+		const existingUser = results.at(0);
+		if (!existingUser) {
+			return fail(400, { message: 'Incorrect username or password' });
+		}
 
-    return {
-        deviceList: deviceList,
-        radius: radius,
-        user_position: user_position,
-        crashList: crashList
-     }
-}) satisfies PageServerLoad;
+		const validPassword = await verify(existingUser.passwordHash, password, {
+			memoryCost: 19456,
+			timeCost: 2,
+			outputLen: 32,
+			parallelism: 1
+		});
+		if (!validPassword) {
+			return fail(400, { message: 'Incorrect username or password' });
+		}
+
+		const sessionToken = auth.generateSessionToken();
+		const session = await auth.createSession(sessionToken, existingUser.id);
+		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+
+		return redirect(302, '/auth/app');
+	}
+};
+
+function validateUsername(username: unknown): username is string {
+	return (
+		typeof username === 'string' &&
+		username.length >= 3 &&
+		username.length <= 31 &&
+		/^[a-z0-9_-]+$/.test(username)
+	);
+}
+
+function validatePassword(password: unknown): password is string {
+	return typeof password === 'string' && password.length >= 6 && password.length <= 255;
+}
