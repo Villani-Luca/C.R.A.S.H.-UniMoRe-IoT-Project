@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import crashlogo from '$lib/assets/383990724-d3bdb664-5fdc-446d-9361-8037283497e7.png';
-	import Separator from '$lib/components/shadcn-components/ui/separator/separator.svelte';
+	import type { ActionData } from './$types';
+
+	let { form }: { form: ActionData } = $props();
 </script>
 
 <div class="w-full h-full bg-custom">
@@ -13,7 +15,7 @@
 			<h1 class=" font-bold">C.R.A.S.H - Collision Check System</h1>
 		</div>
 		<h1 class=" font-semibold text-xl">Sign in</h1>
-		<form method="post" use:enhance>
+		<form method="post" action="?/login" use:enhance>
 			<label for="username">Username</label><br />
 			<input name="username" id="username" class="border-[1px] rounded-md border-black" /><br />
 			<label for="password">Password</label><br />
@@ -23,11 +25,9 @@
 				id="password"
 				class="border-[1px] rounded-md border-black"
 			/><br />
-			<input
-				type="submit"
-				class=" border-[1px] rounded-md bg-green-600 border-green-950 py-1 px-4 mt-4"
-			/>
+			<button class=" border-[1px] rounded-md bg-green-600 border-green-950 py-1 px-4 mt-4">Sign In</button>
 		</form>
+		<p style="color: red">{form?.message ?? ''}</p>
 	</div>
 </div>
 

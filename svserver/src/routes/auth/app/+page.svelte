@@ -83,7 +83,9 @@
 					<p class=" font-bold">Settings Panel</p>
 				</div>
 				<Separator class="my-1" />
+				<div class="flex flex-col items-center mt-5">
 				<label for="radius">Adjust Radius (Km):</label>
+				<div class="flex ">
 					<input
 						type="range"
 						id="radius"
@@ -92,8 +94,10 @@
 						max="150"
 						bind:value={radius}
 					/>
-					<span> {radius} Km</span>
-					<button onclick={()=>goToPage(radius, up.latitude, up.longitude)}> Cerca </button>
+					<span class="ml-2"> {radius} Km</span>
+				</div>
+					<button class="border-[1px] rounded-md bg-green-600 border-green-950 py-1 px-4 mt-4" onclick={()=>goToPage(radius, up.latitude, up.longitude)}> Cerca </button>
+				</div>
 			</div>
 		</div>
 	{:catch error}
@@ -115,5 +119,6 @@
 	<div class="bg-white border-2 rounded-md p-4 m-2">
 		<h1 class=" font-bold">C.R.A.S.H Prevision</h1>
 		<p class="font-light italic text-sm">Previsions of the crashes in the range choose</p>
+		<button onclick={()=> goto(`/auth/app/prediction`)}>Go to AI predictions...</button>
 	</div>
 </div>
