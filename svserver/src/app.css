@@ -72,6 +72,9 @@
   * {
     @apply border-border;
   }
+  html{
+    @apply h-full bg-[rgb(201,201,201)];
+    }; 
   body {
     @apply bg-background text-foreground;
   }
