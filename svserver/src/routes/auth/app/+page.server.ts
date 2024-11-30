@@ -20,9 +20,7 @@ export const load = (async ({ url, locals }) => {
   let long: number = url.searchParams.has('long') ? parseFloat(url.searchParams.get('long')!) : 0;
 
   let user_position: User_Position = { latitude: 0, longitude: 0 };
-
-  console.log(user_position.latitude);
-
+  
   const crashResult = await db
     .select()
     .from(crashreport)

@@ -5,6 +5,7 @@
 	import Separator from '$lib/components/shadcn-components/ui/separator/separator.svelte';
 	import { type User_Position } from '$lib/helpers/user_position';
 	import { goto } from '$app/navigation';
+
 	
 
 	const { data } = $props();
@@ -20,6 +21,7 @@
 			lat: lat.toString(),
 			long: long.toString()
 		});
+		console.log(params)
 		goto(`?${params}`);
 		return null;
 	}
@@ -72,7 +74,7 @@
 				devices={data.deviceList}
 				radius= {radius}
 				crashSites={data.crashList}
-				user_position={up}
+				userposition={up}
 			/>
 		</div>
 		<div class="bg-white border-2 rounded-md p-4 m-2">
@@ -91,7 +93,7 @@
 						bind:value={radius}
 					/>
 					<span> {radius} Km</span>
-					<button onclick={goToPage(radius, up.latitude, up.longitude)}> Cerca </button>
+					<button onclick={()=>goToPage(radius, up.latitude, up.longitude)}> Cerca </button>
 			</div>
 		</div>
 	{:catch error}
@@ -105,7 +107,7 @@
 		<ul>
 			{#each data.deviceList as device}
 				<li>
-					<span class="px-2 font-normal italic">{device.name}</span>
+					<span class="px-2 font-normal italic" >{device.name}</span>
 				</li>
 			{/each}
 		</ul>

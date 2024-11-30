@@ -9,15 +9,18 @@
 		devices: { name: string; lat: number; long: number }[];
 		radius: number;
 		crashSites: { lat: number; long: number; deviceId: string; time: Date | null }[];
-		user_position: User_Position;
+		userposition: User_Position;
 	}
 
-	let { devices, radius, crashSites, user_position }: Props = $props();
+	let { devices, radius, crashSites, userposition }: Props = $props();
 
 	type User_Position = {
 		latitude: number;
 		longitude: number;
 	};
+
+	let user_position = userposition;
+
 
 	$effect(() => {
 		const r = radius * 1000;

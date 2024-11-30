@@ -5,6 +5,7 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
+<div class="flex flex-col">
 <h1>Login/Register</h1>
 <form method="post" action="?/login" use:enhance>
 	<label>
@@ -19,3 +20,4 @@
 	<button formaction="?/register">Register</button>
 </form>
 <p style="color: red">{form?.message ?? ''}</p>
+</div>
