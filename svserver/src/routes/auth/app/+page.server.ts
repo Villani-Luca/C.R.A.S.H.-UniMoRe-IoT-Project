@@ -17,27 +17,38 @@ export const load = (async ({ url, locals }) => {
     .from(device)
     .where(eq(device.userid, session));
 
-  const deviceList = deviceResult.map((x) => ({ name: x.name, lat: x.lastknownlocation?.x.valueOf()!, long: x.lastknownlocation?.y.valueOf()! }));
+  const deviceList = deviceResult.map((x) => ({ 
+    id: x.id,
+    name: x.name, 
+    lat: x.lastknownlocation?.x.valueOf()!, 
+    long: x.lastknownlocation?.y.valueOf()!,
+    active: !!x.lastknownlocation
+  }));
 
   let radius: number = url.searchParams.has('r') ? parseInt(url.searchParams.get('r')!) : 5;
-  let lat: number = url.searchParams.has('lat') ? parseFloat(url.searchParams.get('lat')!) : 0;
-  let long: number = url.searchParams.has('long') ? parseFloat(url.searchParams.get('long')!) : 0;
+  let deviceid: string | undefined = url.searchParams.get('deviceid') ?? undefined;
+  let activedevice = deviceList.filter(x => x.active).find(x => x.id === deviceid) ?? deviceList.filter(x => x.active)[0];
 
-  let user_position: User_Position = { latitude: 0, longitude: 0 };
-  
-  const crashResult = await db
+  const crashResult = activedevice ? await db
     .select()
     .from(crashreport)
     .where(and(
-      sql`ST_Dwithin(${crashreport.location}::geography, ST_MakePoint(${lat}, ${long})::geography, ${radius * 1000})`
-    ));
+      sql`ST_Dwithin(${crashreport.location}::geography, ST_MakePoint(${activedevice.lat}, ${activedevice.long})::geography, ${radius * 1000})`
+    )) : [];
 
-  const crashList = crashResult.map((x) => ({ lat: x.location.x, long: x.location.y, deviceId: x.deviceid, time: x.timestamp }));
+  const crashList = crashResult.map((x) => ({ 
+    id: x.id,
+    lat: x.location.x, 
+    long: x.location.y, 
+    time: x.timestamp! 
+  }));
+  console.log("pageserver crashlist", crashList);
 
   return {
-    deviceList: deviceList,
     radius: radius,
-    user_position: user_position,
+    activedevice: activedevice,
+
+    deviceList: deviceList,
     crashList: crashList
   }
 }) satisfies PageServerLoad;
