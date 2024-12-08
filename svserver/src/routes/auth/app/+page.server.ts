@@ -8,10 +8,14 @@ import { redirect } from '@sveltejs/kit';
 
 export const load = (async ({ url, locals }) => {
   const session = await locals.user?.id;
-  if (!session) throw redirect(302, "/");
+  if (!session) {
+    throw redirect(302, "/");
+  }
 
-  const deviceResult = await db.select(
-  ).from(device).where(x=> eq( x.userid, session));
+  const deviceResult = await db
+    .select()
+    .from(device)
+    .where(eq(device.userid, session));
 
   const deviceList = deviceResult.map((x) => ({ name: x.name, lat: x.lastknownlocation?.x.valueOf()!, long: x.lastknownlocation?.y.valueOf()! }));
 
@@ -25,9 +29,7 @@ export const load = (async ({ url, locals }) => {
     .select()
     .from(crashreport)
     .where(and(
-      sql`
-              ST_Dwithin(${crashreport.location}::geography, ST_MakePoint(${lat}, ${long})::geography, ${radius * 1000})
-            `
+      sql`ST_Dwithin(${crashreport.location}::geography, ST_MakePoint(${lat}, ${long})::geography, ${radius * 1000})`
     ));
 
   const crashList = crashResult.map((x) => ({ lat: x.location.x, long: x.location.y, deviceId: x.deviceid, time: x.timestamp }));
