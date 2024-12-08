@@ -16,8 +16,6 @@
 		crashsites = data.crashList;
 		radius = data.radius;
 		activedevice = data.activedevice;
-		
-		console.log("rcved crashlist", data.crashList);
 	});
 
 	function refreshPage(p?: {

@@ -1,9 +1,4 @@
 <script module>
-	type Position = {
-		latitude: number;
-		longitude: number;
-	};
-
 	type Device = {
 		id: string;
 		name: string;
