@@ -1,30 +1,38 @@
 <script lang="ts">
 	import MapComponent from '$lib/components/MapComponent.svelte';
-	import type {Props} from '$lib/components/MapComponent.svelte';
+	import type { Props } from '$lib/components/MapComponent.svelte';
 	import crashlogo from '$lib/assets/383990724-d3bdb664-5fdc-446d-9361-8037283497e7.png';
 	import * as Avatar from '$lib/components/shadcn-components/ui/avatar/index';
 	import Separator from '$lib/components/shadcn-components/ui/separator/separator.svelte';
+	import { Switch } from '$lib/components/ui/switch';
+	import { Label } from '$lib/components/ui/label';
 	import { goto } from '$app/navigation';
+	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 
 	const { data } = $props();
 	let crashsites = $state(data.crashList);
+	let predictions = $state(data.predictions);
+
 	let radius = $state(data.radius);
 	let activedevice = $state(data.activedevice);
+	let predictions_enabled = $state(data.predictions_enabled);
+
 	let deviceid = $derived(activedevice.id);
-	
+
 	$effect(() => {
 		crashsites = data.crashList;
+		predictions = data.predictions;
+
 		radius = data.radius;
 		activedevice = data.activedevice;
+		predictions_enabled = data.predictions_enabled;
 	});
 
-	function refreshPage(p?: {
-		r?: number,
-		deviceid?: string,
-	}) {
+	function refreshPage(p?: { r?: number; deviceid?: string }) {
 		const params = new URLSearchParams({
 			r: (p?.r ?? radius).toString(),
 			deviceid: p?.deviceid ?? deviceid,
+			predictions: predictions_enabled.toString()
 		});
 
 		return goto(`?${params}`);
@@ -44,8 +52,8 @@
 	}
 	*/
 
-	async function ondeviceclick(device: Parameters<NonNullable<Props['ondeviceclick']>>[0]){
-		activedevice = data.deviceList.find(x => x.id === device.id)!;
+	async function ondeviceclick(device: Parameters<NonNullable<Props['ondeviceclick']>>[0]) {
+		activedevice = data.deviceList.find((x) => x.id === device.id)!;
 		await refreshPage();
 	}
 </script>
@@ -85,10 +93,10 @@
 				<h3 class=" font-bold">C.R.A.S.H Map Locations</h3>
 				<MapComponent
 					devices={data.deviceList}
-					ondeviceclick={ondeviceclick}
+					{ondeviceclick}
 					crashSites={crashsites}
-					activedevice={activedevice}
-					radius={radius}
+					{activedevice}
+					{radius}
 					class="flex-1"
 				/>
 			</div>
@@ -97,9 +105,9 @@
 				<div class="flex flex-col bg-white border-2 rounded-md p-2 row-span-2 gap-2">
 					<h3 class="font-bold">Settings Panel</h3>
 					<Separator />
-					<div class="flex-1 flex flex-col justify-between">
-						<label for="radius">
-							Adjust Radius (Km):
+					<div class="flex-1 flex flex-col gap-4">
+						<div class="flex flex-col gap-2">
+							<Label for="radius">Adjust Radius (Km):</Label>
 							<div class="flex items-center gap-2">
 								<input
 									type="range"
@@ -121,10 +129,18 @@
 								/>
 								<span>Km</span>
 							</div>
-						</label>
+						</div>
+						<div class="flex flex-col gap-2">
+							<Label for="predictions">Predictions</Label>
+							<Switch
+								id="predictions"
+								bind:checked={predictions_enabled}
+								onCheckedChange={() => refreshPage()}
+							/>
+						</div>
 					</div>
 				</div>
-				<div class="bg-white border-2 rounded-md p-4 row-span-2">
+				<div class="bg-white border-2 rounded-md p-4 row-span-1">
 					<h3 class=" font-bold">Devices Installed</h3>
 					<ul>
 						{#each data.deviceList as device}
@@ -140,10 +156,24 @@
 						{/each}
 					</ul>
 				</div>
-				<div class="bg-white border-2 rounded-md p-4">
+				<div class="bg-white border-2 rounded-md p-4 row-span-2">
 					<h3 class=" font-bold">C.R.A.S.H Prevision</h3>
-					<p class="font-light italic text-sm">Previsions of the crashes in the range choose</p>
-					<button onclick={() => goto(`/auth/app/prediction`)}>Go to AI predictions...</button>
+					{#if predictions_enabled}
+					{#await predictions}
+						<Skeleton />
+					{:then pr}
+						<ul>
+							{#each pr as item}
+								<li>
+									<span class="px-2 font-normal italic">{item.ds.toLocaleDateString(undefined, {day: '2-digit', month: '2-digit', year: 'numeric'})}</span>
+									<span class="px-2 font-normal italic">{item.y}</span>
+								</li>
+							{/each}
+						</ul>
+					{/await}
+					{:else}
+					enable pred
+					{/if}
 				</div>
 			</div>
 		</div>
