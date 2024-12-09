@@ -144,14 +144,13 @@
 				color: 'green',
 				fillColor: '#bfffd0',
 				fillOpacity: 0.3,
-				radius: radius * 1000
+				radius: radius * 1000 
 			}).addTo(map);
 
 			for (const element of devices ?? []) {
 				if (!element.lat || !element.long) continue;
 
 				const is_active_device = element.id === activedevice.id;
-				console.log(is_active_device, element);
 				const marker = L.marker([element.lat, element.long], {
 					icon: is_active_device ? icons_cache.active_device_icon : icons_cache.device_icon
 				})

@@ -6,8 +6,11 @@
 	import Separator from '$lib/components/shadcn-components/ui/separator/separator.svelte';
 	import { Switch } from '$lib/components/ui/switch';
 	import { Label } from '$lib/components/ui/label';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
 	import { goto } from '$app/navigation';
 	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
+	import { AreaChart, LineChart} from 'layerchart';
 
 	const { data } = $props();
 	let crashsites = $state(data.crashList);
@@ -102,14 +105,14 @@
 			</div>
 
 			<div class="grid grid-rows-5 gap-2">
-				<div class="flex flex-col bg-white border-2 rounded-md p-2 row-span-2 gap-2">
+				<div class="flex flex-col bg-white border-2 rounded-md p-2 row-span-1 gap-2">
 					<h3 class="font-bold">Settings Panel</h3>
 					<Separator />
 					<div class="flex-1 flex flex-col gap-4">
 						<div class="flex flex-col gap-2">
 							<Label for="radius">Adjust Radius (Km):</Label>
 							<div class="flex items-center gap-2">
-								<input
+								<Input
 									type="range"
 									id="radius"
 									name="radius"
@@ -118,7 +121,7 @@
 									bind:value={radius}
 									onchange={() => refreshPage()}
 								/>
-								<input
+								<Input
 									type="number"
 									id="nradius"
 									name="nradius"
@@ -126,18 +129,26 @@
 									max="150"
 									bind:value={radius}
 									onchange={() => refreshPage()}
+									class="w-fit"
 								/>
 								<span>Km</span>
 							</div>
 						</div>
-						<div class="flex flex-col gap-2">
-							<Label for="predictions">Predictions</Label>
-							<Switch
-								id="predictions"
-								bind:checked={predictions_enabled}
-								onCheckedChange={() => refreshPage()}
-							/>
-						</div>
+					</div>
+				</div>
+				<div class="flex flex-col bg-white border-2 rounded-md p-2 row-span-1 gap-2">
+					<h3 class="font-bold">Generate test crashes</h3>
+					<Separator />
+					<div class="flex flex-col gap-2">
+						<form name="gencrash" method="POST" action="?/gencrash" class="flex flex-col gap-2">
+							<Input name="radius" value={radius} type="hidden" />
+							<Input name="deviceid" value={deviceid} type="hidden" />
+
+							<Label for="number">Number</Label>
+							<Input name="number" type="number" max="50" min="0" class="w-1/2"/>
+
+							<Button type="submit" variant="outline" class="self-end">Generate</Button>
+						</form>
 					</div>
 				</div>
 				<div class="bg-white border-2 rounded-md p-4 row-span-1">
@@ -157,22 +168,33 @@
 					</ul>
 				</div>
 				<div class="bg-white border-2 rounded-md p-4 row-span-2">
-					<h3 class=" font-bold">C.R.A.S.H Prevision</h3>
+					<div class="flex justify-between">
+						<h3 class=" font-bold">C.R.A.S.H Prevision</h3>
+						<Switch
+							id="predictions"
+							bind:checked={predictions_enabled}
+							onCheckedChange={() => refreshPage()}
+						/>
+					</div>
 					{#if predictions_enabled}
-					{#await predictions}
-						<Skeleton />
-					{:then pr}
-						<ul>
-							{#each pr as item}
-								<li>
-									<span class="px-2 font-normal italic">{item.ds.toLocaleDateString(undefined, {day: '2-digit', month: '2-digit', year: 'numeric'})}</span>
-									<span class="px-2 font-normal italic">{item.y}</span>
-								</li>
-							{/each}
-						</ul>
-					{/await}
+						{#await predictions}
+							<Skeleton />
+						{:then pr}
+							{#if pr?.length}
+							<div class="h-[300px] p-4 border rounded">
+							<LineChart 
+								data={pr} 
+								x="ds" 
+								labels={{offset: 10}}
+								series={[{ key: "y", color: "#FF0000" }]}
+								/>
+							</div>
+							{:else}
+							<span class="px-2 font-normal italic">Couldn't compute any predictions</span>
+							{/if}
+						{/await}
 					{:else}
-					enable pred
+						enable pred
 					{/if}
 				</div>
 			</div>

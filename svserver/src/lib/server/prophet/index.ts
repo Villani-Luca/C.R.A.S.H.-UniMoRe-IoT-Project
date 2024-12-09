@@ -5,7 +5,7 @@ import child_process from 'node:child_process'
 import { stringify, parse } from "csv/sync";
 import os from 'os';
 
-export function prophet_predictions(userid: string, data: {ds: Date, y: number}[]): Promise<T>{
+export function prophet_predictions(userid: string, data: {ds: Date, y: number}[]) {
     const filename = path.join(os.tmpdir(), userid);
     const input_filename = filename + '.csv';
     const output_filename = filename + 'result.csv';
@@ -35,8 +35,6 @@ export function prophet_predictions(userid: string, data: {ds: Date, y: number}[
                     cast_date: true,
                 });
                 
-                console.log(parsed[0].ds instanceof Date) 
-
                 resolve(parsed);
             })
         })
