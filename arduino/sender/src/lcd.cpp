@@ -4,7 +4,7 @@
 LiquidCrystal lc(LCD_RS_PIN, LCD_EN_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
 #endif
 
-void lcd_setup(int cols = 16, int rows = 2){
+void lcd_setup(int cols, int rows){
     #if LCD_ENABLED
     lc.begin(cols, rows);
     #endif
@@ -22,7 +22,7 @@ void lcd_toggle_cursor(){
     #endif
 }
 
-void lcd_set_cursor(int col = 0, int row = 0){
+void lcd_set_cursor(int col, int row){
     #if LCD_ENABLED
     lc.setCursor(col, row);
     #endif
@@ -72,7 +72,7 @@ void lcd_print(arduino::String data){
     #endif
 }
 
-void lcd_print(double data, int precision = 2){
+void lcd_print(double data, int precision){
     #if LCD_ENABLED
     lc.print(data, precision);
     #endif
@@ -156,7 +156,7 @@ void lcd_println(arduino::String data){
     #endif
 }
 
-void lcd_println(double data, int precision = 2){
+void lcd_println(double data, int precision){
     #if LCD_ENABLED
     lc.println(data, precision);
     #endif
