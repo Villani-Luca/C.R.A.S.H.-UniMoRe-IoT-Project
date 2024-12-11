@@ -78,6 +78,8 @@ void setup()
   setup_sensors();
   
   matrix.loadFrame(frames[MATRIX_OK]);
+  
+  lcd_print("Device ready");
 }
 
 void loop()
@@ -138,21 +140,24 @@ void loop()
   if (now - last_position_update_ts > 10000)
   {
     last_position_update_ts = now;
-    send_position_update(mqttclient, {
-      	.device = SECRET_DEVICE_ID,
-        .longitude = gps_position.longitude,
-        .latitude = gps_position.latitude,
-    });
+    PositionUpdate update = {
+      SECRET_DEVICE_ID,
+      gps_position.longitude,
+      gps_position.latitude,
+    };
+
+    send_position_update(mqttclient, update);
   }
 
   if (crash)
   {
     last_crash_update_ts = now;
-    send_crash_notification(mqttclient, {
-        .device = SECRET_DEVICE_ID,
-        .longitude = gps_position.longitude,
-        .latitude = gps_position.latitude,
-    });
+    CrashNotification notification = {
+        SECRET_DEVICE_ID,
+        gps_position.longitude,
+        gps_position.latitude
+    };
+    send_crash_notification(mqttclient, notification);
   }
   #endif
 }
@@ -187,6 +192,13 @@ void onMqttMessage(int messageSize) {
       parse_crash_alert(contents.c_str(), alert);
 
       // TODO call lcd monitor print
+      lcd_clear();
+      lcd_set_cursor(0, 0);
+      lcd_print("CRA ");
+      lcd_print(alert.latitude, 6);
+      lcd_set_cursor(0, 1);
+      lcd_print("SH! ");
+      lcd_print(alert.longitude, 6);
     }
 }
 

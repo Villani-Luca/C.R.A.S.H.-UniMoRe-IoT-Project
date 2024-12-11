@@ -1,12 +1,13 @@
 #include "lcd.h"
 
 #if LCD_ENABLED
-LiquidCrystal lc(LCD_RS_PIN, LCD_EN_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
+LiquidCrystal_I2C lc(LCD_ADDR, LCD_COLS, LCD_ROWS);
 #endif
 
-void lcd_setup(int cols, int rows){
+void lcd_setup(){
     #if LCD_ENABLED
-    lc.begin(cols, rows);
+    lc.init();
+    lc.backlight();
     #endif
 }
 

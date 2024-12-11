@@ -1,17 +1,14 @@
 #pragma once
 
-#include <LiquidCrystal.h>
+#include <LiquidCrystal_I2C.h>
 
 #include "modules.h"
 
-#define LCD_RS_PIN 12
-#define LCD_EN_PIN 11
-#define LCD_D4_PIN 5
-#define LCD_D5_PIN 4
-#define LCD_D6_PIN 3
-#define LCD_D7_PIN 7
+#define LCD_ADDR 0x27
+#define LCD_ROWS 2
+#define LCD_COLS 16
 
-void lcd_setup(int cols = 16, int rows = 2);
+void lcd_setup();
 
 void lcd_toggle_display();
 void lcd_toggle_cursor();

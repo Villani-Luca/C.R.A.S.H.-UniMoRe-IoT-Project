@@ -3,8 +3,8 @@
 // ##### Features #####
 //#define MQTT_DISABLE
 //#define WIFI_DISABLE
-//#define SENSOR_ACCEL_DISABLE 
-//#define SENSOR_GPS_DISABLE 
+#define SENSOR_ACCEL_DISABLE 
+#define SENSOR_GPS_DISABLE 
 //#define LCD_DISABLE
 
 #define SENSOR_ACCEL_ENABLED !defined(SENSOR_ACCEL_DISABLE)

@@ -15,7 +15,7 @@ struct PositionUpdate {
 };
 
 struct CrashNotification {
-    const char device[10];
+    char device[10];
     double longitude; 
     double latitude;
 };
