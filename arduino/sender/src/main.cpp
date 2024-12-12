@@ -73,12 +73,25 @@ void setup()
   matrix.begin();
   
   lcd_setup();
+
   setup_wifi();
+  lcd_clear();
+  lcd_print("Wifi ready");
+  delay(500);
+
   setup_mqtt();
+  lcd_clear();
+  lcd_print("MQTT ready");
+  delay(500);
+
   setup_sensors();
+  lcd_clear();
+  lcd_print("Sensors ready");
+  delay(500);
   
   matrix.loadFrame(frames[MATRIX_OK]);
   
+  lcd_clear();
   lcd_print("Device ready");
 }
 
@@ -229,8 +242,7 @@ void setup_wifi(){
   {
     Serial.println("Communication with WiFi module failed!");
     // don't continue
-    while (true)
-      ;
+    while (true);
   }
   matrix.loadFrame(frames[MATRIX_WIFI]);
 
