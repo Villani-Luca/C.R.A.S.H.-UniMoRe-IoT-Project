@@ -104,7 +104,8 @@
 				/>
 			</div>
 
-			<div class="grid grid-rows-5 gap-2">
+			<!--<div class="flex flex-col gap-2 full"> -->
+			<div class="grid grid-rows-4 gap-2">
 				<div class="flex flex-col bg-white border-2 rounded-md p-2 row-span-1 gap-2">
 					<h3 class="font-bold">Settings Panel</h3>
 					<Separator />
