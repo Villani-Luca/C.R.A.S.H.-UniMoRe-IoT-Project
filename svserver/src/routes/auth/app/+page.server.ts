@@ -32,12 +32,15 @@ export const load = (async ({ url, locals }) => {
   let timestamp_crash_threshold = new Date();
   timestamp_crash_threshold.setUTCFullYear(timestamp_crash_threshold.getUTCFullYear() - 1);
 
+  let timestamp_crash_threshold_map = new Date();
+  timestamp_crash_threshold_map.setDate(timestamp_crash_threshold_map.getDate() - 7);
+
   const crashResult = activedevice ? await db
     .select()
     .from(crashreport)
     .where(and(
       sql`ST_Dwithin(${crashreport.location}::geography, ST_MakePoint(${activedevice.lat}, ${activedevice.long})::geography, ${radius * 1000}, true)`,
-      gte(crashreport.timestamp, timestamp_crash_threshold),
+      gte(crashreport.timestamp, timestamp_crash_threshold_map),
     )) : [];
 
   const crashList = crashResult.map((x) => ({ 
