@@ -62,8 +62,7 @@ export const load = (async ({ url, locals }) => {
       .groupBy(sql`${crashreport.timestamp}::date`)
       : [];
       
-    predictions = prophet_predictions(session, crashes);
-    console.log("predictions", await predictions)
+    predictions = prophet_predictions(session, crashes, 'D');
   }
 
   return {
@@ -71,10 +70,12 @@ export const load = (async ({ url, locals }) => {
     activedevice: activedevice,
     predictions_enabled: predictions_enabled == "true",
 
-    predictions,
-
     deviceList: deviceList,
-    crashList: crashList
+    crashList: crashList,
+
+    streamed: {
+      predictions,
+    }
   }
 }) satisfies PageServerLoad;
 
@@ -114,7 +115,7 @@ export const actions = {
     const activedevice = deviceresult[0];
     const crashes: typeof crashreport.$inferInsert[] = [];
     const currenttime = new Date();
-    const starttime = new Date(new Date(+currenttime).setMonth(currenttime.getMonth() - 1))
+    const starttime = new Date(new Date(+currenttime).setMonth(currenttime.getMonth() - 3))
     
     
     const lat = radius / 110.574;

@@ -10,11 +10,11 @@
 	import { Input } from '$lib/components/ui/input';
 	import { goto } from '$app/navigation';
 	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
-	import { AreaChart, LineChart} from 'layerchart';
+	import { LineChart} from 'layerchart';
 
 	const { data } = $props();
 	let crashsites = $state(data.crashList);
-	let predictions = $state(data.predictions);
+	//let predictions = $state(data.streamed.predictions);
 
 	let radius = $state(data.radius);
 	let activedevice = $state(data.activedevice);
@@ -24,7 +24,7 @@
 
 	$effect(() => {
 		crashsites = data.crashList;
-		predictions = data.predictions;
+		//predictions = data.streamed.predictions;
 
 		radius = data.radius;
 		activedevice = data.activedevice;
@@ -145,7 +145,7 @@
 							<Input name="deviceid" value={deviceid} type="hidden" />
 
 							<Label for="number">Number</Label>
-							<Input name="number" type="number" max="50" min="0" class="w-1/2"/>
+							<Input name="number" type="number" max="200" min="0" class="w-1/2"/>
 
 							<Button type="submit" variant="outline" class="self-end">Generate</Button>
 						</form>
@@ -167,7 +167,7 @@
 						{/each}
 					</ul>
 				</div>
-				<div class="bg-white border-2 rounded-md p-4 row-span-2">
+				<div class="bg-white border-2 rounded-md p-4 row-span-2 flex gap-4 flex-col">
 					<div class="flex justify-between">
 						<h3 class=" font-bold">C.R.A.S.H Prevision</h3>
 						<Switch
@@ -177,18 +177,15 @@
 						/>
 					</div>
 					{#if predictions_enabled}
-						{#await predictions}
+						{#await data.streamed.predictions}
 							<Skeleton />
 						{:then pr}
 							{#if pr?.length}
-							<div class="h-[300px] p-4 border rounded">
 							<LineChart 
 								data={pr} 
 								x="ds" 
-								labels={{offset: 10}}
-								series={[{ key: "y", color: "#FF0000" }]}
+								series={[{ key: "yhat", color: "#FF0000", label: 'Crashes' }]}
 								/>
-							</div>
 							{:else}
 							<span class="px-2 font-normal italic">Couldn't compute any predictions</span>
 							{/if}
