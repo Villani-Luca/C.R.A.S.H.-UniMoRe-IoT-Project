@@ -55,10 +55,10 @@ float acceleration_avg = 0;
 
 AccelReading accel_reading;
 Position gps_position = {
-  //.longitude = 10.402873236388588,  // example value
-  //.latitude = 44.085398523165935,   // example value
-  .longitude = 0, 
-  .latitude = 0,   
+  .longitude = 10.402873236388588,  // example value
+  .latitude = 56.085398523165935,   // example value
+  //.longitude = 0, 
+  //.latitude = 0,   
 };
 
 // ##### decls #####
@@ -107,12 +107,12 @@ void loop()
     float module = accel_module(accel_reading);
     acceleration_avg = (alpha * module) + (1.0 - alpha) * acceleration_avg;
 
-    Serial.print("X: "); Serial.print(accel_reading.x); Serial.print(" ");
-    Serial.print("Y: "); Serial.print(accel_reading.y); Serial.print(" ");
-    Serial.print("Z: "); Serial.print(accel_reading.z); Serial.print(" ");
-    Serial.print("T: "); Serial.print(module); Serial.print(" ");
-    Serial.print("A: "); Serial.print(acceleration_avg); Serial.print(" ");
-    Serial.println();
+    //Serial.print("X: "); Serial.print(accel_reading.x); Serial.print(" ");
+    //Serial.print("Y: "); Serial.print(accel_reading.y); Serial.print(" ");
+    //Serial.print("Z: "); Serial.print(accel_reading.z); Serial.print(" ");
+    //Serial.print("T: "); Serial.print(module); Serial.print(" ");
+    //Serial.print("A: "); Serial.print(acceleration_avg); Serial.print(" ");
+    //Serial.println();
 
     // TODO: sistema di controllo piú sofisticato per evitare falsi positivi ecc...
     if(module > acceleration_avg*acceleration_threshold){
