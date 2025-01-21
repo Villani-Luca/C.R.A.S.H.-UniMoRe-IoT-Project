@@ -43,7 +43,6 @@ export function prophet_predictions(userid: string, data: {ds: Date, y: number}[
 
     // D:/Projects/Uni/IoT-3DIntelligentSystem-Project/.venv/Scripts/python.exe 
     return new Promise<ProphetPrediction[]>((resolve, reject) => {
-        console.log("test");
         const cp = child_process.spawn(
             env.PVENV_PATH, 
             [env.PROPHET_FILE, input_filename, output_filename, frequency, periods.toString()],

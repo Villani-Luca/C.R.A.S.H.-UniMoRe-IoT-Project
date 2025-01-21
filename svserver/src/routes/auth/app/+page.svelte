@@ -69,9 +69,6 @@
 	<div class=" flex-grow">
 		<h1 class=" font-bold">C.R.A.S.H - Collision Check System</h1>
 	</div>
-	<div class="">
-		<h1 class=" font-bold">Welcome, Luca Villani</h1>
-	</div>
 	<div class="mx-4">
 		<Avatar.Root>
 			<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
