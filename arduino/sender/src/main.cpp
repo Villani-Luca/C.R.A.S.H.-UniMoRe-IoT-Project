@@ -55,11 +55,14 @@ float acceleration_avg = 0;
 
 AccelReading accel_reading;
 Position gps_position = {
-  .longitude = 10.402873236388588,  // example value
-  .latitude = 56.085398523165935,   // example value
-  //.longitude = 0, 
-  //.latitude = 0,   
+  .longitude=10.9259,
+  .latitude=44.6452, 
 };
+
+// Position gps_position = {
+//   .longitude=10.2259,
+//   .latitude=44.2452, 
+// };
 
 // ##### decls #####
 void printWifiStatus();

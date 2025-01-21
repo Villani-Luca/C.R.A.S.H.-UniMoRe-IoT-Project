@@ -57,10 +57,6 @@ void accel_read(AccelReading& reading) {
     reading.x = evt.acceleration.x;
     reading.y = evt.acceleration.y;
     reading.z = evt.acceleration.z;
-    #else
-    reading.x = 0;
-    reading.y = 0;
-    reading.z = 0;
     #endif
 }
 
@@ -82,9 +78,6 @@ int gps_read(Position& position){
         }
         return 0;
     }
-    #else
-    position.latitude = 0;
-    position.longitude = 0;
     #endif
 
     return 0;
