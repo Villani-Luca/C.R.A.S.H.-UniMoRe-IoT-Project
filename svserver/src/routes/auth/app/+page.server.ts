@@ -65,7 +65,7 @@ export const load = (async ({ url, locals }) => {
       .groupBy(sql`${crashreport.timestamp}::date`)
       : [];
       
-    predictions = prophet_predictions(session, crashes, 'D');
+    predictions = prophet_predictions(session, crashes, 'D').then(x => x.filter(y => y.ds > new Date()));
   }
 
   return {

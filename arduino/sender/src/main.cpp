@@ -54,14 +54,15 @@ float alpha = 1.0;
 float acceleration_avg = 0;
 
 AccelReading accel_reading;
+
 Position gps_position = {
-  .longitude=10.9259,
-  .latitude=44.6452, 
+  .longitude=44.6452,
+  .latitude=10.9259, 
 };
 
 // Position gps_position = {
-//   .longitude=10.2259,
-//   .latitude=44.2452, 
+//   .longitude=44.6052,
+//   .latitude=10.8559, 
 // };
 
 // ##### decls #####
